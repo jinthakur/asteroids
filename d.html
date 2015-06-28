@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<title>Azure webservice call</title>
+	</head>
+	<body onload>
+		<input type="text" value="0" id="temp" />
+<input type="button" value="Send Temperature" onclick="sendTemperature()" />
+<label id="status" > status</label>
+<script type="text/javascript">
+function sendTemperature() { 
+    // Generate a SAS key with the Signature Generator.: https://github.com/sandrinodimattia/RedDog/releases
+    // Could be provided by a Web API.
+    var sas = "SharedAccessSignature sr=https%3a%2f%2fhacksterions.servicebus.windows.net%2feventhubhackster%2fpublishers%2fsendrule%2fmessages&sig=BF9ZC%2fAy0u2ru%2fFznWpXZQqTo6iiN%2bcoKX2XlwEUV4M%3d&se=1435516657&skn=sendrule";
+ //Endpoint=sb://hacksterions.servicebus.windows.net/;SharedAccessKeyName=sendrule;SharedAccessKey=zPzia9xCetaL3RElfpVhjaLRJyNukC1ND7QAuqBXwOg=
+ //https://hacksterions.servicebus.windows.net/temperature/publishers/phone/messages&sig=Luqu/ZQd6rfhCdGPTZlhMYCVtXM51QWsdSVlc08LGWc=&se=1405564221&skn=SenderDevice
+   //SharedAccessSignature sr=https%3a%2f%2fhacksterions.servicebus.windows.net%2feventhubhackster%2fpublishers%2fsendrule%2fmessages&sig=FEQX1yeRA1wIW5Tnd5wHirM94KmyyaYquUVXCBiysyw%3d&se=1435479832&skn=sendrule
+   //SharedAccessSignature sr=https%3a%2f%2fhacksterions.servicebus.windows.net%2feventhubhackster%2fpublishers%2fsendrule%2fmessages&sig=BF9ZC%2fAy0u2ru%2fFznWpXZQqTo6iiN%2bcoKX2XlwEUV4M%3d&se=1435516657&skn=sendrule
+   var serviceNamespace = "hacksterions";
+    var hubName = "eventhubhackster";
+    var deviceName = "sendrule";
+ 
+    var xmlHttpRequest = new XMLHttpRequest();
+    xmlHttpRequest.open("POST", "https://" +
+        serviceNamespace + ".servicebus.windows.net/" + hubName + "/publishers/" + deviceName + "/messages", true);
+    xmlHttpRequest.setRequestHeader('Content-Type',        "application/atom+xml;type=entry;charset=utf-8");
+    xmlHttpRequest.setRequestHeader("Authorization", sas);
+
+    xmlHttpRequest.onreadystatechange = function () {
+        if (this.readyState == 4) {
+		
+
+            if (this.status == 201) {
+                document.getElementById('status').innerText =
+                    'Sent: ' + document.getElementById('temp').value;
+		    alert(this.status);
+            } else {
+                document.getElementById('status').innerText =
+                    this.status;
+					
+            }
+			
+        }
+    };
+ 
+    xmlHttpRequest.send("{ Temperature: " + document.getElementById('temp').value + " }");
+}
+
+sendTemperature();
+</script>
+	</body>
+</html>
